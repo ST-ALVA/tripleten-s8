@@ -83,6 +83,8 @@ def create_table_from_df(df, table_name, db_config):
             insert_query = f'INSERT INTO "{table_name}" VALUES ({values})'
             cursor.execute(insert_query, tuple(row))
 
+            # hacer que se borre en caso de que exista y se cree una nueva.
+
         conn.commit()
 
         # Cerrar conexión

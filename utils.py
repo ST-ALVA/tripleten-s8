@@ -131,3 +131,51 @@ def read_json_file(file_path):
     except Exception as e:
         print(f"Error al leer el archivo JSON: {e}")
         return None
+
+
+def limpieza_general(df):
+    """
+    Realiza una limpieza general de un DataFrame:
+    - Normaliza nombres de columnas.
+    - Elimina espacios innecesarios en strings.
+    - Intenta convertir columnas tipo fecha.
+    - Elimina duplicados.
+    - Reporta tipos de datos y nulos.
+
+    Retorna:
+    - df_limpio: DataFrame limpio.
+    """
+    df = df.copy()  # Evitar modificar el original
+
+    # 1. Nombres de columnas estandarizados
+    df.columns = (
+        df.columns.str.strip()
+        .str.lower()
+        .str.replace(" ", "_")
+        .str.replace(r"[^\w]", "_", regex=True)
+    )
+
+    # 2. Limpiar espacios en columnas tipo texto
+    for col in df.select_dtypes(include="object").columns:
+        df[col] = df[col].str.strip()
+
+    # 3. Intentar convertir columnas que parecen fechas
+    for col in df.columns:
+        if df[col].dtype == "object":
+            try:
+                df[col] = pd.to_datetime(df[col], errors="raise")
+                print(f"📅 Columna '{col}' convertida a fecha.")
+            except:
+                continue
+
+    # 4. Eliminar duplicados
+    df = df.drop_duplicates()
+
+    # 5. Reporte de tipos y nulos
+    print("\n📊 Tipos de datos:")
+    print(df.dtypes)
+    print("\n🔍 Valores nulos por columna:")
+    print(df.isnull().sum())
+
+    print("\n✅ Limpieza general completada.")
+    return df

@@ -1,4 +1,5 @@
-SELECT film_id,
-       title
+SELECT 
+    film_id,
+    title
 FROM film;
 
